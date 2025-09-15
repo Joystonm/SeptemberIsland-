@@ -14,6 +14,15 @@ export const useWorldState = create((set, get) => ({
   lanterns: [],
   lanternMode: false,
   lanternInterval: null,
+  pumpkinCount: 0,
+  collectedStaticPumpkins: [],
+  
+  getTotalPumpkins: () => {
+    const state = get()
+    const dynamicPumpkins = state.objects.filter(obj => obj.type === 'pumpkin').length
+    const staticPumpkins = 2 - state.collectedStaticPumpkins.length
+    return dynamicPumpkins + staticPumpkins
+  },
   
   addObject: (object) => set((state) => ({ 
     objects: [...state.objects, object] 
@@ -166,6 +175,30 @@ export const useWorldState = create((set, get) => ({
       }, 3000)
       set({ lanternMode: true, lanternInterval: interval })
     }
+  },
+  
+  collectPumpkin: (id) => set((state) => {
+    console.log(`Collecting pumpkin ID: ${id}`)
+    console.log(`Current objects:`, state.objects.map(obj => ({ id: obj.id, type: obj.type })))
+    console.log(`Current pumpkin count: ${state.pumpkinCount}`)
+    
+    const newState = {
+      objects: state.objects.filter(obj => obj.id !== id),
+      pumpkinCount: state.pumpkinCount + 1,
+      collectedStaticPumpkins: id.startsWith('static-') 
+        ? [...state.collectedStaticPumpkins, id]
+        : state.collectedStaticPumpkins
+    }
+    
+    console.log(`New pumpkin count: ${newState.pumpkinCount}`)
+    console.log(`Remaining objects:`, newState.objects.map(obj => ({ id: obj.id, type: obj.type })))
+    
+    return newState
+  }),
+  
+  playPopSound: () => {
+    // Placeholder for sound effect - could be replaced with actual audio
+    console.log('🎵 Pop! Pumpkin collected')
   },
   
   resetAutumn: () => set({ 
