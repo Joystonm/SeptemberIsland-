@@ -1,16 +1,18 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useWorldState } from '../hooks/useWorldState'
+import GlowingMushroom from './GlowingMushroom'
 
 export default function ProceduralTree({ position = [0, 0, 0], isNew = false, autumnStage: propAutumnStage, isAutumnTree = false, seed }) {
   const treeRef = useRef()
+  const mushroomRef = useRef()
   const [shake, setShake] = useState(0)
   const [scale, setScale] = useState(isNew ? 0 : 1)
   const [opacity, setOpacity] = useState(1)
   const [leafColors, setLeafColors] = useState(["#228B22", "#32CD32", "#228B22"])
   const [targetColors, setTargetColors] = useState(null)
   const [colorProgress, setColorProgress] = useState(0)
-  const { addObject, windEnabled, autumnStage: globalAutumnStage } = useWorldState()
+  const { addObject, windEnabled, autumnStage: globalAutumnStage, scene } = useWorldState()
   
   // Generate random tree characteristics once
   const treeVariation = useMemo(() => {
@@ -199,9 +201,13 @@ export default function ProceduralTree({ position = [0, 0, 0], isNew = false, au
             <cylinderGeometry args={[0.02, 0.02, 0.04, 6]} />
             <meshStandardMaterial color="#F5DEB3" />
           </mesh>
-          <mesh position={[0, 0.05, 0]}>
+          <mesh ref={mushroomRef} position={[0, 0.05, 0]}>
             <sphereGeometry args={[0.04, 8, 8]} />
-            <meshStandardMaterial color="#FF6B47" emissive="#FF6B47" emissiveIntensity={0.2} />
+            <meshStandardMaterial 
+              color="#FF6B47" 
+              emissive={scene === 'night' ? "#9D4EDD" : "#000000"}
+              emissiveIntensity={scene === 'night' ? 0.6 : 0}
+            />
           </mesh>
         </group>
       )}

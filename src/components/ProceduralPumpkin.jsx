@@ -4,9 +4,10 @@ import { useWorldState } from '../hooks/useWorldState'
 
 export default function ProceduralPumpkin({ position = [0, 0, 0], isNew = false }) {
   const pumpkinRef = useRef()
+  const glowRef = useRef()
   const [pop, setPop] = useState(0)
   const [scale, setScale] = useState(isNew ? 0 : 1)
-  const { addObject } = useWorldState()
+  const { addObject, scene } = useWorldState()
   
   useEffect(() => {
     if (isNew) {
@@ -28,13 +29,21 @@ export default function ProceduralPumpkin({ position = [0, 0, 0], isNew = false 
     }
   }, [isNew])
   
-  useFrame(() => {
+  useFrame((state) => {
     if (pumpkinRef.current && pop > 0) {
       const popScale = 1 + pop * 0.3
       pumpkinRef.current.scale.setScalar(popScale * scale)
       setPop(pop - 0.05)
     } else if (pumpkinRef.current) {
       pumpkinRef.current.scale.setScalar(scale)
+    }
+    
+    // Candle flicker animation for glow
+    if (glowRef.current && scene === 'night') {
+      const flicker = Math.sin(state.clock.elapsedTime * 8 + position[0] * 5) * 0.1 + 
+                     Math.sin(state.clock.elapsedTime * 12 + position[2] * 3) * 0.05
+      const intensity = 0.6 + flicker
+      glowRef.current.material.emissiveIntensity = Math.max(0.3, intensity)
     }
   })
   
@@ -53,11 +62,17 @@ export default function ProceduralPumpkin({ position = [0, 0, 0], isNew = false 
     })
   }
   
+  const isNight = scene === 'night'
+  
   return (
     <group position={position} ref={pumpkinRef} onClick={handleClick}>
-      <mesh scale={[1, 0.8, 1]}>
+      <mesh ref={glowRef} scale={[1, 0.8, 1]}>
         <sphereGeometry args={[0.25, 16, 12]} />
-        <meshStandardMaterial color="#FF955C" />
+        <meshStandardMaterial 
+          color="#FF955C"
+          emissive={isNight ? "#FF8C42" : "#000000"}
+          emissiveIntensity={isNight ? 0.6 : 0}
+        />
       </mesh>
       
       {Array.from({ length: 6 }, (_, i) => {
@@ -87,6 +102,20 @@ export default function ProceduralPumpkin({ position = [0, 0, 0], isNew = false 
         <boxGeometry args={[0.08, 0.04, 0.01]} />
         <meshStandardMaterial color="#32CD32" />
       </mesh>
+      
+      {/* Ground glow effect */}
+      {isNight && (
+        <mesh position={[0, -0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.8, 16]} />
+          <meshStandardMaterial 
+            color="#FFA552"
+            transparent
+            opacity={0.15}
+            emissive="#FF8C42"
+            emissiveIntensity={0.2}
+          />
+        </mesh>
+      )}
     </group>
   )
 }
