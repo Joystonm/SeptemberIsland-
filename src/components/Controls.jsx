@@ -24,11 +24,8 @@ export default function Controls() {
     const position = getRandomPosition(2.5)
     position[1] = 0
     
-    const uniqueId = `pumpkin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    console.log(`Adding pumpkin with ID: ${uniqueId}`)
-    
     addObject({
-      id: uniqueId,
+      id: Date.now() + Math.random(),
       type: 'pumpkin',
       position,
       isNew: true

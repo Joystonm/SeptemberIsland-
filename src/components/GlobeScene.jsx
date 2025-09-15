@@ -232,7 +232,7 @@ function Island() {
 }
 
 export default function GlobeScene() {
-  const { scene, objects, natureMode, cozyMode, lanterns, removeLantern, collectedStaticPumpkins } = useWorldState()
+  const { scene, objects, natureMode, cozyMode, lanterns, removeLantern } = useWorldState()
   const [birds, setBirds] = useState([])
   const [dogs, setDogs] = useState([])
   
@@ -302,12 +302,8 @@ export default function GlobeScene() {
       <ProceduralHouse position={[0, 0, 0]} />
       <ProceduralTree position={[-1.5, 0, 1]} />
       <Creature position={[1, 0, -1]} />
-      {!collectedStaticPumpkins.includes('static-pumpkin-1') && (
-        <ProceduralPumpkin position={[0.8, 0, 0.8]} id="static-pumpkin-1" />
-      )}
-      {!collectedStaticPumpkins.includes('static-pumpkin-2') && (
-        <ProceduralPumpkin position={[-0.5, 0, -1.2]} id="static-pumpkin-2" />
-      )}
+      <ProceduralPumpkin position={[0.8, 0, 0.8]} />
+      <ProceduralPumpkin position={[-0.5, 0, -1.2]} />
       
       {objects.map((obj) => {
         const Component = {
@@ -320,7 +316,6 @@ export default function GlobeScene() {
         return Component ? (
           <Component 
             key={obj.id} 
-            id={obj.id} 
             position={obj.position} 
             isNew={obj.isNew}
             autumnStage={obj.autumnStage}
