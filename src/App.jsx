@@ -3,7 +3,6 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import GlobeScene from './components/GlobeScene'
 import UIOverlay from './components/UIOverlay'
-import PumpkinCounter from './components/PumpkinCounter'
 import { useWorldState } from './hooks/useWorldState'
 import './styles/globals.css'
 
@@ -60,7 +59,6 @@ function App() {
       </Canvas>
       
       <UIOverlay />
-      <PumpkinCounter />
     </div>
   )
 }
