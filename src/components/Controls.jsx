@@ -3,7 +3,22 @@ import { useWorldState } from '../hooks/useWorldState'
 import { getRandomPosition } from '../utils/randomPosition'
 
 export default function Controls() {
-  const { addObject, toggleWind, windEnabled, progressAutumn, autumnStage, isTransitioning, toggleLanternMode, lanternMode } = useWorldState()
+  const { 
+    addObject, 
+    toggleWind, 
+    windEnabled, 
+    progressAutumn, 
+    autumnStage, 
+    isTransitioning, 
+    toggleLanternMode, 
+    lanternMode,
+    toggleNature,
+    toggleCozy,
+    natureMode,
+    cozyMode,
+    isTogglingNature,
+    isTogglingCozy
+  } = useWorldState()
   const buttonRef = useRef()
   const lanternButtonRef = useRef()
   
@@ -155,6 +170,35 @@ export default function Controls() {
       >
         🏮
       </button>
-    </div>
+      
+      <button 
+        onClick={toggleNature}
+        disabled={isTogglingNature}
+        className={`w-12 h-12 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center text-lg ${
+          isTogglingNature
+            ? 'bg-amber-300 text-amber-900 cursor-not-allowed animate-pulse'
+            : natureMode 
+            ? 'bg-green-200 hover:bg-green-300 text-green-800 ring-2 ring-green-400' 
+            : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
+        }`}
+        title={`Nature ${natureMode ? 'ON' : 'OFF'}`}
+      >
+        {isTogglingNature ? '✨' : natureMode ? '🌿' : '🌱'}
+      </button>
+      
+      <button 
+        onClick={toggleCozy}
+        disabled={isTogglingCozy}
+        className={`w-12 h-12 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center text-lg ${
+          isTogglingCozy
+            ? 'bg-amber-300 text-amber-900 cursor-not-allowed animate-pulse'
+            : cozyMode 
+            ? 'bg-orange-200 hover:bg-orange-300 text-orange-800 ring-2 ring-orange-400' 
+            : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
+        }`}
+        title={`Cozy ${cozyMode ? 'ON' : 'OFF'}`}
+      >
+        {isTogglingCozy ? '✨' : cozyMode ? '🔥' : '🕯️'}
+      </button>    </div>
   )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import Controls from './Controls'
 import SceneSwitcher from './SceneSwitcher'
 import GroqQuotes from './GroqQuotes'
-import AmbientSound from './AmbientSound'
+import MusicToggle from './MusicToggle'
 import KeyboardControls from './KeyboardControls'
 
 export default function UIOverlay() {
@@ -11,7 +11,9 @@ export default function UIOverlay() {
       <Controls />
       <SceneSwitcher />
       <GroqQuotes />
-      <AmbientSound />
+      <div className="absolute bottom-6 right-6">
+        <MusicToggle />
+      </div>
       <KeyboardControls />
       
       {/* Minimal title */}
