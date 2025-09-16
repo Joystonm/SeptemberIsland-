@@ -5,15 +5,21 @@ export default function MusicToggle() {
   const audioRef = useRef(null)
 
   useEffect(() => {
-    const audio = new Audio('/src/assets/background.mp3')
+    const audio = new Audio('/background.mp3')
     audio.loop = true
     audio.volume = 0
     audioRef.current = audio
 
     // Auto-start with fade-in
-    audio.play().then(() => {
-      fadeIn()
-    }).catch(console.error)
+    const playAudio = async () => {
+      try {
+        await audio.play()
+        fadeIn()
+      } catch (error) {
+        console.log('Audio autoplay blocked, waiting for user interaction')
+      }
+    }
+    playAudio()
 
     return () => {
       audio.pause()
