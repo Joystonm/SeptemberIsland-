@@ -4,6 +4,7 @@ export const useWorldState = create((set, get) => ({
   objects: [],
   scene: 'day',
   windEnabled: false,
+  weatherMode: 'clear',
   autumnStage: 0, // 0=green, 1=yellow, 2=orange, 3=deep red
   isTransitioning: false,
   autumnTreeIds: [],
@@ -43,6 +44,10 @@ export const useWorldState = create((set, get) => ({
     windEnabled: !state.windEnabled 
   })),
   
+  setWeatherMode: (mode) => set((state) => ({
+    weatherMode: mode,
+    windEnabled: mode === 'windy'
+  })),  
   toggleNature: () => {
     const state = get()
     if (!state.isTogglingNature) {
