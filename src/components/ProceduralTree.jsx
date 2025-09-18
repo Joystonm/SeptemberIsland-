@@ -97,7 +97,8 @@ export default function ProceduralTree({ position = [0, 0, 0], isNew = false, au
       
       // Smooth color transition animation (1-2 seconds)
       if (targetColors && colorProgress < 1) {
-        setColorProgress(prev => Math.min(prev + 0.012, 1)) // Slower for smoother transition
+        const easedProgress = 1 - Math.pow(1 - colorProgress, 3) // Ease-out cubic
+        setColorProgress(prev => Math.min(prev + 0.016, 1)) // 60fps smooth transition
         
         const interpolateColor = (start, end, progress) => {
           const r1 = parseInt(start.slice(1, 3), 16)

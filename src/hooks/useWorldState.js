@@ -6,6 +6,7 @@ export const useWorldState = create((set, get) => ({
   windEnabled: false,
   weatherMode: 'clear',
   autumnStage: 0, // 0=green, 1=yellow, 2=orange, 3=deep red
+  autumnDirection: 1, // 1=forward, -1=backward
   isTransitioning: false,
   autumnTreeIds: [],
   natureMode: false,
@@ -48,6 +49,7 @@ export const useWorldState = create((set, get) => ({
     weatherMode: mode,
     windEnabled: mode === 'windy'
   })),  
+  
   toggleNature: () => {
     const state = get()
     if (!state.isTogglingNature) {
@@ -72,24 +74,33 @@ export const useWorldState = create((set, get) => ({
         }))
       }, 500)
     }
-  },  
+  },
+  
   progressAutumn: () => {
     const state = get()
-    if (state.isTransitioning || state.autumnStage >= 3) return
+    if (state.isTransitioning) return
     
     set({ isTransitioning: true })
     
-    const newStage = state.autumnStage + 1
-    set({ autumnStage: newStage })
+    let newStage = state.autumnStage + state.autumnDirection
+    let newDirection = state.autumnDirection
     
-    // Add autumn trees only on first progression
-    if (newStage === 1) {
-      const autumnColors = [
-        ["#FFD700", "#FFFF99", "#FFD700"], // Yellow stage 1
-        ["#FF8C00", "#FFA500", "#FF8C00"], // Orange stage 2  
-        ["#8B0000", "#DC143C", "#8B0000"]  // Deep red stage 3
-      ]
-      
+    // Handle boundaries and direction changes
+    if (newStage > 3) {
+      newStage = 3
+      newDirection = -1 // Switch to backward
+    } else if (newStage < 0) {
+      newStage = 0
+      newDirection = 1 // Switch to forward
+    }
+    
+    set({ 
+      autumnStage: newStage,
+      autumnDirection: newDirection
+    })
+    
+    // Add autumn trees only on first forward progression to stage 1
+    if (newStage === 1 && state.autumnStage === 0 && newDirection === 1) {
       const newTreeIds = []
       
       // Add 3 autumn trees with delays
@@ -124,6 +135,13 @@ export const useWorldState = create((set, get) => ({
       }
     }
     
+    // Remove autumn trees when going back to green
+    if (newStage === 0 && state.autumnStage === 1 && newDirection === -1) {
+      setTimeout(() => {
+        get().removeAutumnTrees()
+      }, 1000)
+    }
+    
     // Particle burst effect
     for (let i = 0; i < 8; i++) {
       setTimeout(() => {
@@ -146,8 +164,9 @@ export const useWorldState = create((set, get) => ({
     // Reset transition flag
     setTimeout(() => {
       set({ isTransitioning: false })
-    }, 2000)
+    }, 1500) // Reduced for smoother experience
   },
+  
   spawnLantern: () => {
     const newLantern = {
       id: Date.now() + Math.random(),
@@ -208,6 +227,7 @@ export const useWorldState = create((set, get) => ({
   
   resetAutumn: () => set({ 
     autumnStage: 0,
+    autumnDirection: 1,
     isTransitioning: false,
     objects: [],
     autumnTreeIds: []

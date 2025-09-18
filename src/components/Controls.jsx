@@ -66,17 +66,6 @@ export default function Controls() {
   
   const handleProgressAutumn = () => {
     if (!isTransitioning) {
-      if (autumnStage >= 3) {
-        if (buttonRef.current) {
-          buttonRef.current.style.transform = 'scale(1.2)'
-          setTimeout(() => {
-            if (buttonRef.current) {
-              buttonRef.current.style.transform = 'scale(1)'
-            }
-          }, 200)
-        }
-        return
-      }
       progressAutumn()
     }
   }
@@ -98,23 +87,31 @@ export default function Controls() {
       }
     }
     
-    if (autumnStage >= 3) {
-      return {
-        ...stages[3],
-        extra: 'opacity-75 cursor-not-allowed'
-      }
-    }
-    
     return stages[autumnStage]
   }
   
   const buttonStyle = getAutumnButtonStyle()
   const tooltips = [
-    "Start Autumn",
-    "Deepen Colors", 
-    "Rich Autumn",
-    "Peak Autumn"
+    "Start Autumn (Green)",
+    "Deepen Colors (Yellow)", 
+    "Rich Autumn (Orange)",
+    "Peak Autumn (Deep Red)"
   ]
+  
+  const getTooltipText = () => {
+    if (isTransitioning) return "Transitioning..."
+    
+    const { autumnDirection } = useWorldState.getState()
+    const currentTooltip = tooltips[autumnStage]
+    
+    if (autumnStage === 3 && autumnDirection === 1) {
+      return "Return to Orange"
+    } else if (autumnStage === 0 && autumnDirection === -1) {
+      return "Grow to Yellow"
+    }
+    
+    return currentTooltip
+  }
   
   return (
     <div className="absolute bottom-6 left-6 flex flex-col gap-3">
@@ -139,7 +136,7 @@ export default function Controls() {
         onClick={handleProgressAutumn}
         disabled={isTransitioning}
         className={`w-12 h-12 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center text-lg ${buttonStyle.bg} ${buttonStyle.text} ${buttonStyle.extra || ''}`}
-        title={autumnStage >= 3 ? "Peak Autumn Reached" : tooltips[autumnStage]}
+        title={getTooltipText()}
       >
         {buttonStyle.icon}
       </button>

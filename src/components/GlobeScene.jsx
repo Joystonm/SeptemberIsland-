@@ -98,7 +98,8 @@ function Island() {
     
     let progress = 0
     const animate = () => {
-      progress += 0.015 // Smooth 1-2 second transition
+      progress += 0.02 // Smooth 1-2 second transition with 60fps
+      const easedProgress = 1 - Math.pow(1 - progress, 3) // Ease-out cubic
       if (progress >= 1) {
         setColors(targetColors)
         return
