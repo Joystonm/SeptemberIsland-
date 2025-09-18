@@ -6,6 +6,7 @@ A magical autumn island experience built with React + React Three Fiber + Groq A
 
 - 🌳 Procedurally generated 3D objects (trees, houses, pumpkins, creatures)
 - 🍂 Physics-based falling leaves with wind simulation
+- 🌦️ Interactive weather system (Clear, Drizzle, Fog, Windy)
 - 🎨 Dynamic scene switching (day/night/sunset/cozy cabin)
 - 🤖 AI-generated names and affirmations via Groq
 - 🎵 Ambient sound system

@@ -11,7 +11,7 @@ function Leaf({ position, color }) {
     (Math.random() - 0.5) * 0.02
   ])
   
-  const { windEnabled } = useWorldState()
+  const { windEnabled, weatherMode } = useWorldState()
   
   useFrame((state) => {
     if (leafRef.current) {
@@ -19,7 +19,8 @@ function Leaf({ position, color }) {
       velocity.current[1] -= 0.0001
       
       // Enhanced wind effects
-      if (windEnabled) {
+      const isWindy = windEnabled || weatherMode === 'windy'
+      if (isWindy) {
         const windStrength = 0.002
         const time = state.clock.elapsedTime
         
@@ -42,7 +43,7 @@ function Leaf({ position, color }) {
       leafRef.current.position.z += velocity.current[2]
       
       // Enhanced rotation for natural fall
-      const rotSpeed = windEnabled ? 0.05 : 0.025
+      const rotSpeed = isWindy ? 0.05 : 0.025
       leafRef.current.rotation.x += rotSpeed
       leafRef.current.rotation.z += rotSpeed * 0.8
       leafRef.current.rotation.y += rotSpeed * 0.4

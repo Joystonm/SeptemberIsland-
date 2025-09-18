@@ -1,12 +1,11 @@
 import React, { useRef } from 'react'
 import { useWorldState } from '../hooks/useWorldState'
 import { getRandomPosition } from '../utils/randomPosition'
+import WeatherToggle from './WeatherToggle'
 
 export default function Controls() {
   const { 
     addObject, 
-    toggleWind, 
-    windEnabled, 
     progressAutumn, 
     autumnStage, 
     isTransitioning, 
@@ -23,7 +22,6 @@ export default function Controls() {
   const lanternButtonRef = useRef()
   
   const handleLanternClick = () => {
-    // Visual feedback animation
     if (lanternButtonRef.current) {
       lanternButtonRef.current.style.transform = 'scale(1.2)'
       setTimeout(() => {
@@ -146,17 +144,7 @@ export default function Controls() {
         {buttonStyle.icon}
       </button>
       
-      <button 
-        onClick={toggleWind}
-        className={`w-12 h-12 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center text-lg ${
-          windEnabled 
-            ? 'bg-blue-200 hover:bg-blue-300 text-blue-800 ring-2 ring-blue-400 animate-pulse' 
-            : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
-        }`}
-        title={`Wind ${windEnabled ? 'On' : 'Off'}`}
-      >
-        💨
-      </button>
+      <WeatherToggle />
       
       <button 
         ref={lanternButtonRef}
@@ -199,6 +187,7 @@ export default function Controls() {
         title={`Cozy ${cozyMode ? 'ON' : 'OFF'}`}
       >
         {isTogglingCozy ? '✨' : cozyMode ? '🔥' : '🕯️'}
-      </button>    </div>
+      </button>
+    </div>
   )
 }

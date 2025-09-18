@@ -7,6 +7,7 @@ import Creature from './Creature'
 import LeafSpawner from './LeafSpawner'
 import Bird from './Bird'
 import Dog from './Dog'
+import WeatherEffects from './WeatherEffects'
 import WishLantern from './WishLantern'
 import GlowingMushroom from './GlowingMushroom'
 import { useWorldState } from '../hooks/useWorldState'
@@ -355,6 +356,7 @@ export default function GlobeScene() {
           onRemove={() => removeLantern(lantern.id)}
         />
       ))}      <LeafSpawner />
+      <WeatherEffects />
     </>
   )
 }
