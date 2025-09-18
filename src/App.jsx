@@ -5,6 +5,7 @@ import GlobeScene from './components/GlobeScene'
 import UIOverlay from './components/UIOverlay'
 import PumpkinCounter from './components/PumpkinCounter'
 import DateTime from './components/DateTime'
+import BreakTimer from './components/BreakTimer'
 import { useWorldState } from './hooks/useWorldState'
 import './styles/globals.css'
 
@@ -61,6 +62,7 @@ function App() {
       </Canvas>
       
       <DateTime />
+      <BreakTimer />
       <UIOverlay />
       <PumpkinCounter />
     </div>
