@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useWorldState } from '../hooks/useWorldState'
 import GlowingMushroom from './GlowingMushroom'
+import MagicalExplosion from './MagicalExplosion'
 
 export default function ProceduralTree({ position = [0, 0, 0], isNew = false, autumnStage: propAutumnStage, isAutumnTree = false, seed }) {
   const treeRef = useRef()
@@ -9,6 +10,8 @@ export default function ProceduralTree({ position = [0, 0, 0], isNew = false, au
   const [shake, setShake] = useState(0)
   const [scale, setScale] = useState(isNew ? 0 : 1)
   const [opacity, setOpacity] = useState(1)
+  const [exploding, setExploding] = useState(false)
+  const [shouldRemove, setShouldRemove] = useState(false)
   const [leafColors, setLeafColors] = useState(["#228B22", "#32CD32", "#228B22"])
   const [targetColors, setTargetColors] = useState(null)
   const [colorProgress, setColorProgress] = useState(0)
@@ -125,93 +128,101 @@ export default function ProceduralTree({ position = [0, 0, 0], isNew = false, au
   })
   
   const handleClick = () => {
-    setShake(0.3)
-    const leafPos = [
-      position[0] + (Math.random() - 0.5) * 2,
-      position[1] + 2,
-      position[2] + (Math.random() - 0.5) * 2
-    ]
-    addObject({
-      id: Date.now(),
-      type: 'leaf',
-      position: leafPos
-    })
+    setExploding(true)
   }
   
-  if (opacity <= 0) return null
+  const handleExplosionComplete = () => {
+    setShouldRemove(true)
+  }
+  
+  if (shouldRemove) return null
   
   return (
-    <group ref={treeRef} position={[
-      position[0] + treeVariation.posOffset[0],
-      position[1] + treeVariation.posOffset[1], 
-      position[2] + treeVariation.posOffset[2]
-    ]} rotation={[0, treeVariation.rotation, 0]} onClick={handleClick}>
-      {/* Trunk */}
-      <mesh position={[0, treeVariation.trunkHeight * 0.5, 0]}>
-        <cylinderGeometry args={[treeVariation.trunkWidth * 0.75, treeVariation.trunkWidth, treeVariation.trunkHeight, 8]} />
-        <meshStandardMaterial 
-          color={`hsl(25, 60%, ${30 * treeVariation.trunkTint}%)`} 
-          transparent 
-          opacity={opacity} 
-        />
-      </mesh>
-      
-      {/* Leaves - varied based on tree shape */}
-      {treeVariation.treeShape === 'tall' ? (
-        // Tall thin tree
-        <>
-          <mesh position={[0, treeVariation.trunkHeight + 0.4, 0]}>
-            <sphereGeometry args={[treeVariation.leafSize * 0.7, 12, 12]} />
-            <meshStandardMaterial color={leafColors[0]} transparent opacity={opacity} />
-          </mesh>
-          <mesh position={[0, treeVariation.trunkHeight + 0.8, 0]}>
-            <sphereGeometry args={[treeVariation.leafSize * 0.5, 12, 12]} />
-            <meshStandardMaterial color={leafColors[1]} transparent opacity={opacity} />
-          </mesh>
-        </>
-      ) : (
-        // Round bushy tree
-        <>
-          <mesh position={[0, treeVariation.trunkHeight + 0.2, 0]}>
-            <sphereGeometry args={[treeVariation.leafSize, 12, 12]} />
-            <meshStandardMaterial color={leafColors[0]} transparent opacity={opacity} />
-          </mesh>
-          <mesh position={[0.2 * treeVariation.leafSize, treeVariation.trunkHeight + 0.4, 0.1 * treeVariation.leafSize]}>
-            <sphereGeometry args={[treeVariation.leafSize * 0.6, 12, 12]} />
-            <meshStandardMaterial color={leafColors[1]} transparent opacity={opacity} />
-          </mesh>
-          <mesh position={[-0.1 * treeVariation.leafSize, treeVariation.trunkHeight + 0.3, -0.2 * treeVariation.leafSize]}>
-            <sphereGeometry args={[treeVariation.leafSize * 0.55, 12, 12]} />
-            <meshStandardMaterial color={leafColors[2]} transparent opacity={opacity} />
-          </mesh>
-        </>
-      )}
-      
-      {/* Optional bird */}
-      {treeVariation.hasBird && (
-        <mesh position={[0.3, treeVariation.trunkHeight + 0.8, 0.2]}>
-          <sphereGeometry args={[0.03, 6, 6]} />
-          <meshStandardMaterial color="#FF6B6B" />
-        </mesh>
-      )}
-      
-      {/* Optional glowing mushroom */}
-      {treeVariation.hasMushroom && (
-        <group position={[0.4, 0.05, -0.3]}>
-          <mesh position={[0, 0.02, 0]}>
-            <cylinderGeometry args={[0.02, 0.02, 0.04, 6]} />
-            <meshStandardMaterial color="#F5DEB3" />
-          </mesh>
-          <mesh ref={mushroomRef} position={[0, 0.05, 0]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
+    <>
+      {!exploding && (
+        <group ref={treeRef} position={[
+          position[0] + treeVariation.posOffset[0],
+          position[1] + treeVariation.posOffset[1], 
+          position[2] + treeVariation.posOffset[2]
+        ]} rotation={[0, treeVariation.rotation, 0]} onClick={handleClick}>
+          {/* Trunk */}
+          <mesh position={[0, treeVariation.trunkHeight * 0.5, 0]}>
+            <cylinderGeometry args={[treeVariation.trunkWidth * 0.75, treeVariation.trunkWidth, treeVariation.trunkHeight, 8]} />
             <meshStandardMaterial 
-              color="#FF6B47" 
-              emissive={scene === 'night' ? "#9D4EDD" : "#000000"}
-              emissiveIntensity={scene === 'night' ? 0.6 : 0}
+              color={`hsl(25, 60%, ${30 * treeVariation.trunkTint}%)`} 
+              transparent 
+              opacity={opacity} 
             />
           </mesh>
+          
+          {/* Leaves - varied based on tree shape */}
+          {treeVariation.treeShape === 'tall' ? (
+            // Tall thin tree
+            <>
+              <mesh position={[0, treeVariation.trunkHeight + 0.4, 0]}>
+                <sphereGeometry args={[treeVariation.leafSize * 0.7, 12, 12]} />
+                <meshStandardMaterial color={leafColors[0]} transparent opacity={opacity} />
+              </mesh>
+              <mesh position={[0, treeVariation.trunkHeight + 0.8, 0]}>
+                <sphereGeometry args={[treeVariation.leafSize * 0.5, 12, 12]} />
+                <meshStandardMaterial color={leafColors[1]} transparent opacity={opacity} />
+              </mesh>
+            </>
+          ) : (
+            // Round bushy tree
+            <>
+              <mesh position={[0, treeVariation.trunkHeight + 0.2, 0]}>
+                <sphereGeometry args={[treeVariation.leafSize, 12, 12]} />
+                <meshStandardMaterial color={leafColors[0]} transparent opacity={opacity} />
+              </mesh>
+              <mesh position={[0.2 * treeVariation.leafSize, treeVariation.trunkHeight + 0.4, 0.1 * treeVariation.leafSize]}>
+                <sphereGeometry args={[treeVariation.leafSize * 0.6, 12, 12]} />
+                <meshStandardMaterial color={leafColors[1]} transparent opacity={opacity} />
+              </mesh>
+              <mesh position={[-0.1 * treeVariation.leafSize, treeVariation.trunkHeight + 0.3, -0.2 * treeVariation.leafSize]}>
+                <sphereGeometry args={[treeVariation.leafSize * 0.55, 12, 12]} />
+                <meshStandardMaterial color={leafColors[2]} transparent opacity={opacity} />
+              </mesh>
+            </>
+          )}
+          
+          {/* Optional bird */}
+          {treeVariation.hasBird && (
+            <mesh position={[0.3, treeVariation.trunkHeight + 0.8, 0.2]}>
+              <sphereGeometry args={[0.03, 6, 6]} />
+              <meshStandardMaterial color="#FF6B6B" />
+            </mesh>
+          )}
+          
+          {/* Optional glowing mushroom */}
+          {treeVariation.hasMushroom && (
+            <group position={[0.4, 0.05, -0.3]}>
+              <mesh position={[0, 0.02, 0]}>
+                <cylinderGeometry args={[0.02, 0.02, 0.04, 6]} />
+                <meshStandardMaterial color="#F5DEB3" />
+              </mesh>
+              <mesh ref={mushroomRef} position={[0, 0.05, 0]}>
+                <sphereGeometry args={[0.04, 8, 8]} />
+                <meshStandardMaterial 
+                  color="#FF6B47" 
+                  emissive={scene === 'night' ? "#9D4EDD" : "#000000"}
+                  emissiveIntensity={scene === 'night' ? 0.6 : 0}
+                />
+              </mesh>
+            </group>
+          )}
         </group>
       )}
-    </group>
+      {exploding && (
+        <MagicalExplosion 
+          position={[
+            position[0] + treeVariation.posOffset[0],
+            position[1] + treeVariation.posOffset[1] + treeVariation.trunkHeight + 0.5,
+            position[2] + treeVariation.posOffset[2]
+          ]} 
+          onComplete={handleExplosionComplete} 
+        />
+      )}
+    </>
   )
 }
