@@ -22,6 +22,3 @@ A magical autumn island experience built with React + React Three Fiber + Tailwi
    ```bash
    npm run dev
    ```
-
-nt)
-- Vite (build tool)
