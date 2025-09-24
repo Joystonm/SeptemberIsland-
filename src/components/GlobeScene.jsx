@@ -10,6 +10,7 @@ import Dog from './Dog'
 import WeatherEffects from './WeatherEffects'
 import WishLantern from './WishLantern'
 import GlowingMushroom from './GlowingMushroom'
+import SlimeNPC from './SlimeNPC'
 import { useWorldState } from '../hooks/useWorldState'
 
 function Firefly({ position }) {
@@ -350,6 +351,8 @@ export default function GlobeScene() {
       ))}
       
       
+      {/* Slime NPC */}
+      <SlimeNPC position={[2, 0, 1.5]} sceneMode={scene} />      
       {lanterns.map(lantern => (
         <WishLantern
           key={lantern.id}
